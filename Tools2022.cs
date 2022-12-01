@@ -39,7 +39,7 @@ public class Tools2022 : MonoBehaviour
     {
         _isProcessing = true;
         _input = "";
-        string uri = "https://adventofcode.com/2021/day/" + day.ToString() + "/input";
+        string uri = "https://adventofcode.com/2022/day/" + day.ToString() + "/input";
 
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
         {
@@ -58,8 +58,6 @@ public class Tools2022 : MonoBehaviour
             else
             {
                 _input = webRequest.downloadHandler.text.TrimEnd('\n');
-                
-                //Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
             }
         }
         _isProcessing = false;
@@ -87,15 +85,8 @@ public class Tools2022 : MonoBehaviour
 
     public IEnumerator GetLeaderoard()
     {
-        //var textfile = Resources.Load<TextAsset>("lb");
-        //yield return new WaitForEndOfFrame();
-        //_input = textfile.text;
-        //Debug.LogWarning("input : " + _input);
-        //yield break;
-
-
         _input = "";
-        string uri = "https://adventofcode.com/2021/leaderboard/private/view/" + EasyAccessValues.LeaderboardId + ".json";
+        string uri = "https://adventofcode.com/2022/leaderboard/private/view/" + EasyAccessValues.LeaderboardId + ".json";
 
 
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
