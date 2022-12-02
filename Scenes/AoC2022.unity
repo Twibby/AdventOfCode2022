@@ -307,7 +307,7 @@ MonoBehaviour:
   IsDebug: 0
   IsTestInput: 0
   Part1: 1
-  Part2: 0
+  Part2: 1
   AnimPart1: 0
   AnimPart2: 0
   animationScript: {fileID: 0}
