@@ -11,7 +11,7 @@ public class Day_2022_02 : DayScript2022
 
         foreach (string round in _input.Split('\n'))
         {
-            totalScore += (int)(round.Last() - 'W');    // item Score, X=1 Y=2 Z=3
+            totalScore += (int)(round[2] - 'W');    // item Score, X=1 Y=2 Z=3
 
             int issue = (int)(round[2] - round[0]) %3;
             switch (issue)
@@ -37,19 +37,10 @@ public class Day_2022_02 : DayScript2022
 
         foreach (string round in _input.Split('\n'))
         {
-            totalScore += (int)(round.Last() - 'X') * 3; // battle Issue, X=win=0 Y=draw=3 Z=win=6
+            totalScore += (int)(round[2] - 'X') * 3; // battle Issue, X=win=0 Y=draw=3 Z=win=6
 
             int itemPicked = (int)(round[0] + round[2] - 'Y' +3 -'A') %3;
-
-            switch (itemPicked)
-            {
-                case 0: //rock  +1point
-                    totalScore += 1; break;
-                case 1: //paper  +2points
-                    totalScore += 2; break;
-                case 2: //scissors +3points
-                    totalScore += 3; break;
-            }
+            totalScore += itemPicked + 1;   // 0 means rock so 1 point, etc..
         }
 
         return totalScore.ToString();
