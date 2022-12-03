@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Day_2022_02 : DayScript2022
+public class Day_2022_02 : DayScript2022 
 {
     protected override string part_1()
     {
