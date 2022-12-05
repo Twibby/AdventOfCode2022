@@ -16,7 +16,7 @@ public class Day_2022_03 : DayScript2022
             foreach (char c in leftItems)
             {
                 if (rightItems.Contains(c))
-                {
+                {   // item found in both rucksack, add its priority and move to next sack
                     totalScore += getScoreItem(c);
                     break;
                 }
