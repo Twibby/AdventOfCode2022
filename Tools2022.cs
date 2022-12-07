@@ -111,4 +111,13 @@ public class Tools2022 : MonoBehaviour
             }
         }
     }
+
+
+
+    public static string WriteOffset(int offset)
+    {
+        string log = "";
+        for (int i = 0; i < offset; i++) { log += "* *\t"; }
+        return log;
+    }
 }
