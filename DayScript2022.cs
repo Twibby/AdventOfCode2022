@@ -73,7 +73,7 @@ public class DayScript2022 : MonoBehaviour
             result = part_2();
 
             log += " | Ended at " + Time.realtimeSinceStartup;
-            log += " | Part 1 duration is : " + (Time.realtimeSinceStartup - t0).ToString();
+            log += " | Part 2 duration is : " + (Time.realtimeSinceStartup - t0).ToString();
             if (IsDebug)
                 Debug.Log(log);
 
