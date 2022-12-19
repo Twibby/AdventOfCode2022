@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Just putting some tags for next years to retrieve this A* algo :
+// A star A* dijsktra djisktra path graph
+
+
 public class Day_2022_12 : DayScript2022
 {
     protected override string part_1()
     {
         List<string> grid = _input.Split('\n').ToList();
+
 
         IntVector2 startPos = IntVector2.zero;
         for (int raw = 0; raw < grid.Count; raw++)

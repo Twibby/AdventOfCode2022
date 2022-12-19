@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Day_2022_13 : DayScript2022
+public class Day_2022_19 : DayScript2022
 {
     protected override string part_1()
     {
-        foreach (string instruction in _input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries))
+        foreach (string instruction in _input.Split('\n'))
         {
 
         }
