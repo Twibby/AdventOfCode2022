@@ -8,16 +8,18 @@ public class Day_2022_17 : DayScript2022
 {
     protected override string part_1()
     {
-        return auxDay17(2022);
+        StartCoroutine(auxDay17(2022));
+        return "";
     }
 
     protected override string part_2()
     {
         //  1.000.000.000.000
-        return auxDay17(1000000);
+        StartCoroutine(auxDay17(1000000000000));
+        return "";
     }
 
-    string auxDay17(int totalRockWanted)
+    IEnumerator auxDay17(double totalRockWanted)
     { 
         int gridWidth = 7;
         int indexIteration = 0;
@@ -31,11 +33,66 @@ public class Day_2022_17 : DayScript2022
 
         printCavern(cavern);
         Debug.LogWarning(cavern.Count);
-        for (int rockCount = 0; rockCount < totalRockWanted; rockCount++)
+
+        Debug.LogWarning("Instruction length is : " + instruction.Length);
+        float t0 = Time.realtimeSinceStartup;
+        
+
+        // following variables are here to make easier pattern recognition, i'm pretty sure this can be optimized
+        List<(int, double)> instructionIndexOnRock0 = new List<(int, double)>();        
+        int startPatternIndex = -1;
+        double diffPattern = -1;
+        double startPatternRockCount = -1;        
+        double heightOffset = 0;
+        bool isPatternvalidated = false;
+
+
+        for (double rockCount = 0; rockCount < totalRockWanted; rockCount++)
         {
-            //Debug.LogWarning("Starting rock " + (rockCount + 1).ToString());
+            Debug.Log("Starting rock " + (rockCount + 1).ToString());
 
             string[] rockShape = getRockShape(rockCount);
+
+            if (rockCount > 1 && rockCount % 5 == 0)
+            {
+                yield return new WaitForEndOfFrame();
+
+                // first of 5 rock shapes. Let's try to find a pattern, did we already meet that rock spawn being at same spot in instruction? 
+                Debug.Log("At instruction : " + indexIteration + System.Environment.NewLine + System.String.Join("-", instructionIndexOnRock0.Select(x => x.Item1 + " (" + x.Item2 + ")")));
+                if (!isPatternvalidated && instructionIndexOnRock0.Exists(x => x.Item1 == indexIteration) && (startPatternIndex < 0  || indexIteration == startPatternIndex))
+                {
+                    Debug.LogWarning("MAY WE HAVE A PATTERN ?? (" + startPatternIndex + ") at rock " + rockCount );
+                    double patternStart = instructionIndexOnRock0.FindLast(x => x.Item1 == indexIteration).Item2;
+                    double tallPoint = cavern.Select(x => x.LastIndexOf('#')).Max() + 1;
+                    Debug.Log("With index at " + indexIteration + " | start : " + patternStart + " | end : " + tallPoint + " | Diff : " + (tallPoint - patternStart).ToString());
+
+                    if (startPatternIndex >= 0)
+                    { // pattern confirmation
+                        Debug.LogWarning("And old pattern gap was " + diffPattern);
+                        if (diffPattern == (tallPoint - patternStart))
+                        {
+                            Debug.LogWarning("YES");
+
+                            double period = rockCount - startPatternRockCount;
+                            double cycleNumber = System.Math.Floor((totalRockWanted - rockCount) / period) -1;      // period remaining (-1 to finish manually)
+
+                            heightOffset = cycleNumber * diffPattern;       // Store the height of all 
+                            rockCount += cycleNumber * period;
+                            Debug.LogWarning("Period is : " + period + " | total Rock wanted is " + totalRockWanted + " | Cycles remaining : " + cycleNumber);
+                            Debug.LogWarning("And now rockcount is at " + rockCount + " with offset " + heightOffset + "; just finish now");
+
+                            isPatternvalidated = true;
+                        }
+                    }
+
+                    startPatternIndex = indexIteration;
+                    diffPattern = (tallPoint - patternStart);
+                    startPatternRockCount = rockCount;
+                }
+                instructionIndexOnRock0.Add((indexIteration,cavern.Select(x => x.LastIndexOf('#')).Max() + 1));
+            }
+
+
             int heighestPoint = cavern.Select(x => Mathf.Max(x.LastIndexOf('@'), x.LastIndexOf('#'))).Max() + 4;
             IntVector2 botLeftPos = new IntVector2(2, heighestPoint);
 
@@ -163,18 +220,18 @@ public class Day_2022_17 : DayScript2022
                 Debug.Log(printCavern(cavern));
         }
 
-        int tallestPoint = cavern.Select(x => Mathf.Max(x.LastIndexOf('#'), x.LastIndexOf('@'))).Max() + 1;
+        double tallestPoint = cavern.Select(x => Mathf.Max(x.LastIndexOf('#'), x.LastIndexOf('@'))).Max() + 1;
+        Debug.LogWarning(tallestPoint);
+        Debug.LogWarning("Tallest Point " + tallestPoint + " with height offset " + heightOffset + " => total : " + (tallestPoint + heightOffset).ToString());
 
         //Debug.Log(printCavern(cavern));
 
-        Debug.Log(printCavern(cavern));
-
-        return tallestPoint.ToString();
+        //return tallestPoint.ToString();
     }
 
 
 
-    string[] getRockShape(int rockCount)
+    string[] getRockShape(double rockCount)
     {
         switch (rockCount % 5)
         {
