@@ -1290,7 +1290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsDebug: 0
-  IsTestInput: 1
+  IsTestInput: 0
   Part1: 0
   Part2: 1
   AnimPart1: 0

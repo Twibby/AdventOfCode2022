@@ -25,28 +25,30 @@ public class Day_2022_20 : DayScript2022
         {
             IndexedElement elmt = elements.Find(x => x.id == i);
 
-            int oldIndex = elmt.currentIndex;
+            double oldIndex = elmt.currentIndex;
             double newIndex = oldIndex + elmt.value;
-            if (newIndex >= ec)
-                newIndex = (newIndex + 1) % ec;
-            if (newIndex < 0)
-                newIndex = ((newIndex-1)%ec + ec)%ec;
+            //if (newIndex >= ec)
+            //    newIndex = (newIndex + 1) % ec;
+            //if (newIndex < 0)
+            //    newIndex = ((newIndex-1)%ec + ec)%ec;
+                
+            newIndex = (newIndex%(ec-1) + (ec-1)) % (ec-1);
 
             Debug.Log("Moving element " + elmt.value  + " | old Index : " + oldIndex + " | " + newIndex);
 
 
             if (oldIndex < newIndex)
             {
-                for (int k = oldIndex + 1; k <= newIndex; k++)
+                for (double k = oldIndex + 1; k <= newIndex; k++)
                 {
-                    elements[k].currentIndex -= 1;
+                    elements[(int)k].currentIndex -= 1;
                 }
             }
             else if (oldIndex > newIndex)
             {
-                for (int k = oldIndex - 1; k >= newIndex; k--)
+                for (double k = oldIndex - 1; k >= newIndex; k--)
                 {
-                    elements[k].currentIndex += 1;
+                    elements[(int)k].currentIndex += 1;
                 }
             }
             elmt.currentIndex = (int)newIndex;
@@ -54,12 +56,10 @@ public class Day_2022_20 : DayScript2022
 
             elements.Sort(delegate (IndexedElement e1, IndexedElement e2) { return e1.currentIndex.CompareTo(e2.currentIndex); });
 
-            //elements[(oldIndex + 1) % ec].prev = elements[(oldIndex + ec - 1) % ec];
-
-            //Debug.Log(System.String.Join(", ", elements.Select(x => x.value)));
+            Debug.Log(System.String.Join(", ", elements.Select(x => x.value)));
         }
 
-        int zeroIndex = elements.Find(x => x.value == 0).currentIndex;
+        double zeroIndex = elements.Find(x => x.value == 0).currentIndex;
         double first = elements.Find(x => x.currentIndex == (zeroIndex + 1000) % ec).value;
         double second = elements.Find(x => x.currentIndex == (zeroIndex + 2000) % ec).value;
         double third = elements.Find(x => x.currentIndex == (zeroIndex + 3000) % ec).value;
@@ -67,7 +67,10 @@ public class Day_2022_20 : DayScript2022
         double total = first + second + third;
         Debug.Log("1 : " + first + " | 2 : " + second + " | 3 : " + third + "  ==> " + total.ToString());
 
-        return "";
+        Debug.Log(System.String.Join(", ", elements.Select(x => x.value)));
+
+
+        return total.ToString();
     }
 
     protected override string part_2()
@@ -93,28 +96,30 @@ public class Day_2022_20 : DayScript2022
             {
                 IndexedElement elmt = elements.Find(x => x.id == i);
 
-                int oldIndex = elmt.currentIndex;
+                double oldIndex = elmt.currentIndex;
                 double newIndex = oldIndex + elmt.value;
-                if (newIndex >= ec)
-                    newIndex = (newIndex + 1) % ec;
-                if (newIndex < 0)
-                    newIndex = ((newIndex - 1) % ec + ec) % ec;
+                //if (newIndex >= ec)
+                //    newIndex = (newIndex + 1) % ec;
+                //if (newIndex < 0)
+                //    newIndex = ((newIndex - 1) % ec + ec) % ec;
+
+                newIndex = (newIndex % (ec - 1) + (ec - 1)) % (ec - 1);
 
                 //Debug.Log("Moving element " + elmt.value + " | old Index : " + oldIndex + " | " + newIndex);
 
 
                 if (oldIndex < newIndex)
                 {
-                    for (int k = oldIndex + 1; k <= newIndex; k++)
+                    for (double k = oldIndex + 1; k <= newIndex; k++)
                     {
-                        elements[k].currentIndex -= 1;
+                        elements[(int)k].currentIndex -= 1;
                     }
                 }
                 else if (oldIndex > newIndex)
                 {
-                    for (int k = oldIndex - 1; k >= newIndex; k--)
+                    for (double k = oldIndex - 1; k >= newIndex; k--)
                     {
-                        elements[k].currentIndex += 1;
+                        elements[(int)k].currentIndex += 1;
                     }
                 }
                 elmt.currentIndex = (int)newIndex;
@@ -129,7 +134,7 @@ public class Day_2022_20 : DayScript2022
             Debug.Log(System.String.Join(", ", elements.Select(x => x.value)));
         }
 
-        int zeroIndex = elements.Find(x => x.value == 0).currentIndex;
+        double zeroIndex = elements.Find(x => x.value == 0).currentIndex;
         double first = elements.Find(x => x.currentIndex == (zeroIndex + 1000) % ec).value;
         double second = elements.Find(x => x.currentIndex == (zeroIndex + 2000) % ec).value;
         double third = elements.Find(x => x.currentIndex == (zeroIndex + 3000) % ec).value;
@@ -144,7 +149,7 @@ public class Day_2022_20 : DayScript2022
     {
         public int id;
         public double value;
-        public int currentIndex;
+        public double currentIndex;
 
         public override string ToString()
         {
