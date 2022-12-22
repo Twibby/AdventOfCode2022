@@ -686,8 +686,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsDebug: 0
   IsTestInput: 0
-  Part1: 1
-  Part2: 0
+  Part1: 0
+  Part2: 1
   AnimPart1: 0
   AnimPart2: 0
   animationScript: {fileID: 0}
@@ -2093,6 +2093,57 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1384506009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1384506011}
+  - component: {fileID: 1384506010}
+  m_Layer: 0
+  m_Name: Day_2022_22
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1384506010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384506009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefa6f9c54f159e4ebafcc8e68a48aac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsDebug: 0
+  IsTestInput: 0
+  Part1: 1
+  Part2: 0
+  AnimPart1: 0
+  AnimPart2: 0
+  animationScript: {fileID: 0}
+--- !u!4 &1384506011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384506009}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.0190701, y: -0.07201624, z: 18.343721}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1410097943
 GameObject:
   m_ObjectHideFlags: 0
@@ -2820,7 +2871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2122389398
 MonoBehaviour:
   m_ObjectHideFlags: 0
