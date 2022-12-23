@@ -61,7 +61,7 @@ public class DayAnimation_2022_17 : DayAnimationScript
 
             string[] rockShape = getRockShape(rockCount);
             int heighestPoint = cavern.Select(x => Mathf.Max(x.LastIndexOf('@'), x.LastIndexOf('#'))).Max() + 4;
-            IntVector2 botLeftPos = new IntVector2(2, heighestPoint);
+            Vector2Int botLeftPos = new Vector2Int(2, heighestPoint);
 
             GameObject rock =  GameObject.Instantiate(RocksPrefabs[rockCount % RocksPrefabs.Count], new Vector3(2, heighestPoint, 0), Quaternion.identity, RockParent);
             //Color tmp = new Color(UnityEngine.Random.Range(0, 255f) / 255f, UnityEngine.Random.Range(0, 255f) / 255f, UnityEngine.Random.Range(0, 255f) / 255f);

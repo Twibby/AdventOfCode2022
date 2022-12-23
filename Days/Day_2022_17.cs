@@ -94,7 +94,7 @@ public class Day_2022_17 : DayScript2022
 
 
             int heighestPoint = cavern.Select(x => Mathf.Max(x.LastIndexOf('@'), x.LastIndexOf('#'))).Max() + 4;
-            IntVector2 botLeftPos = new IntVector2(2, heighestPoint);
+            Vector2Int botLeftPos = new Vector2Int(2, heighestPoint);
 
             if (rockCount < 10)
             {

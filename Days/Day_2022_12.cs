@@ -15,25 +15,25 @@ public class Day_2022_12 : DayScript2022
         List<string> grid = _input.Split('\n').ToList();
 
 
-        IntVector2 startPos = IntVector2.zero;
+        Vector2Int startPos = Vector2Int.zero;
         for (int raw = 0; raw < grid.Count; raw++)
         {
             int colIndex = grid[raw].IndexOf('S');
             if (colIndex >= 0)
             {
-                startPos = new IntVector2(colIndex, raw);
+                startPos = new Vector2Int(colIndex, raw);
                 Debug.Log("Start found at pos : " + startPos.ToString());
                 break;
             }
         }
 
-        IntVector2 endPos = IntVector2.zero;
+        Vector2Int endPos = Vector2Int.zero;
         for (int raw = 0; raw < grid.Count; raw++)
         {
             int colIndex = grid[raw].IndexOf('E');
             if (colIndex >= 0)
             {
-                endPos = new IntVector2(colIndex, raw);
+                endPos = new Vector2Int(colIndex, raw);
                 Debug.Log("End found at pos : " + endPos.ToString());
                 break;
             }
@@ -45,13 +45,13 @@ public class Day_2022_12 : DayScript2022
         int width = grid[0].Length;
         int height = grid.Count;
 
-        List <KeyValuePair<IntVector2, int>> treatedPoints = new List<KeyValuePair<IntVector2, int>>();
-        List<KeyValuePair<IntVector2,int>> queuePoints = new List<KeyValuePair<IntVector2, int>>() { new KeyValuePair<IntVector2, int>(startPos,0) };
+        List <KeyValuePair<Vector2Int, int>> treatedPoints = new List<KeyValuePair<Vector2Int, int>>();
+        List<KeyValuePair<Vector2Int,int>> queuePoints = new List<KeyValuePair<Vector2Int, int>>() { new KeyValuePair<Vector2Int, int>(startPos,0) };
 
         int safetyCount = width*height;
         while (queuePoints.Count > 0 && safetyCount > 0)
         {
-            IntVector2 curPos = queuePoints[0].Key;
+            Vector2Int curPos = queuePoints[0].Key;
             int curWeight = queuePoints[0].Value;
             queuePoints.RemoveAt(0);
 
@@ -59,8 +59,8 @@ public class Day_2022_12 : DayScript2022
             if (curChar == 'S')
                 curChar = 'a';
 
-            List<IntVector2> neighbours = new List<IntVector2>() { new IntVector2(curPos.x - 1, curPos.y), new IntVector2(curPos.x + 1, curPos.y), new IntVector2(curPos.x, curPos.y - 1), new IntVector2(curPos.x, curPos.y + 1) };
-            foreach (IntVector2 nextPos in neighbours)
+            List<Vector2Int> neighbours = new List<Vector2Int>() { new Vector2Int(curPos.x - 1, curPos.y), new Vector2Int(curPos.x + 1, curPos.y), new Vector2Int(curPos.x, curPos.y - 1), new Vector2Int(curPos.x, curPos.y + 1) };
+            foreach (Vector2Int nextPos in neighbours)
             {
                 if (treatedPoints.Exists(x => x.Key.x == nextPos.x && x.Key.y == nextPos.y))
                     continue;
@@ -82,16 +82,16 @@ public class Day_2022_12 : DayScript2022
                             else
                             {
                                 queuePoints.RemoveAll(x => x.Key.x == nextPos.x && x.Key.y == nextPos.y);
-                                queuePoints.Add(new KeyValuePair<IntVector2, int>(nextPos, curWeight + 1));
+                                queuePoints.Add(new KeyValuePair<Vector2Int, int>(nextPos, curWeight + 1));
                             }
                         }
                         else
-                            queuePoints.Add(new KeyValuePair<IntVector2, int>(nextPos, curWeight + 1));
+                            queuePoints.Add(new KeyValuePair<Vector2Int, int>(nextPos, curWeight + 1));
                     }
                 }
             }
-            treatedPoints.Add(new KeyValuePair<IntVector2, int>(curPos, curWeight));
-            queuePoints.Sort(delegate (KeyValuePair<IntVector2, int> a, KeyValuePair<IntVector2, int> b) { return a.Value.CompareTo(b.Value); });
+            treatedPoints.Add(new KeyValuePair<Vector2Int, int>(curPos, curWeight));
+            queuePoints.Sort(delegate (KeyValuePair<Vector2Int, int> a, KeyValuePair<Vector2Int, int> b) { return a.Value.CompareTo(b.Value); });
 
             safetyCount--;
         }
@@ -107,13 +107,13 @@ public class Day_2022_12 : DayScript2022
 
         List<string> grid = _input.Split('\n').ToList();
 
-        IntVector2 startPos = IntVector2.zero;
+        Vector2Int startPos = Vector2Int.zero;
         for (int raw = 0; raw < grid.Count; raw++)
         {
             int colIndex = grid[raw].IndexOf('S');
             if (colIndex >= 0)
             {
-                startPos = new IntVector2(colIndex, raw);
+                startPos = new Vector2Int(colIndex, raw);
                 Debug.Log("Start found at pos : " + startPos.ToString());
                 break;
             }
@@ -122,13 +122,13 @@ public class Day_2022_12 : DayScript2022
         grid[startPos.y] = grid[startPos.y].Substring(0, startPos.x) + 'a' + grid[startPos.y].Substring(startPos.x + 1);
         Debug.Log(grid[startPos.y]);
 
-        IntVector2 endPos = IntVector2.zero;
+        Vector2Int endPos = Vector2Int.zero;
         for (int raw = 0; raw < grid.Count; raw++)
         {
             int colIndex = grid[raw].IndexOf('E');
             if (colIndex >= 0)
             {
-                endPos = new IntVector2(colIndex, raw);
+                endPos = new Vector2Int(colIndex, raw);
                 Debug.Log("End found at pos : " + endPos.ToString());
                 break;
             }
@@ -140,20 +140,20 @@ public class Day_2022_12 : DayScript2022
         int width = grid[0].Length;
         int height = grid.Count;
 
-        List<KeyValuePair<IntVector2, int>> treatedPoints = new List<KeyValuePair<IntVector2, int>>();
-        List<KeyValuePair<IntVector2, int>> queuePoints = new List<KeyValuePair<IntVector2, int>>() { new KeyValuePair<IntVector2, int>(endPos, 0) };
+        List<KeyValuePair<Vector2Int, int>> treatedPoints = new List<KeyValuePair<Vector2Int, int>>();
+        List<KeyValuePair<Vector2Int, int>> queuePoints = new List<KeyValuePair<Vector2Int, int>>() { new KeyValuePair<Vector2Int, int>(endPos, 0) };
 
         int safetyCount = width * height;
         while (queuePoints.Count > 0 && safetyCount > 0)
         {
-            IntVector2 curPos = queuePoints[0].Key;
+            Vector2Int curPos = queuePoints[0].Key;
             int curWeight = queuePoints[0].Value;
             queuePoints.RemoveAt(0);
 
             char curChar = grid[curPos.y][curPos.x];
 
-            List<IntVector2> neighbours = new List<IntVector2>() { new IntVector2(curPos.x - 1, curPos.y), new IntVector2(curPos.x + 1, curPos.y), new IntVector2(curPos.x, curPos.y - 1), new IntVector2(curPos.x, curPos.y + 1) };
-            foreach (IntVector2 nextPos in neighbours)
+            List<Vector2Int> neighbours = new List<Vector2Int>() { new Vector2Int(curPos.x - 1, curPos.y), new Vector2Int(curPos.x + 1, curPos.y), new Vector2Int(curPos.x, curPos.y - 1), new Vector2Int(curPos.x, curPos.y + 1) };
+            foreach (Vector2Int nextPos in neighbours)
             {
                 if (treatedPoints.Exists(x => x.Key.x == nextPos.x && x.Key.y == nextPos.y))
                     continue;
@@ -175,16 +175,16 @@ public class Day_2022_12 : DayScript2022
                             else
                             {
                                 queuePoints.RemoveAll(x => x.Key.x == nextPos.x && x.Key.y == nextPos.y);
-                                queuePoints.Add(new KeyValuePair<IntVector2, int>(nextPos, curWeight + 1));
+                                queuePoints.Add(new KeyValuePair<Vector2Int, int>(nextPos, curWeight + 1));
                             }
                         }
                         else
-                            queuePoints.Add(new KeyValuePair<IntVector2, int>(nextPos, curWeight + 1));
+                            queuePoints.Add(new KeyValuePair<Vector2Int, int>(nextPos, curWeight + 1));
                     }
                 }
             }
-            treatedPoints.Add(new KeyValuePair<IntVector2, int>(curPos, curWeight));
-            queuePoints.Sort(delegate (KeyValuePair<IntVector2, int> a, KeyValuePair<IntVector2, int> b) { return a.Value.CompareTo(b.Value); });
+            treatedPoints.Add(new KeyValuePair<Vector2Int, int>(curPos, curWeight));
+            queuePoints.Sort(delegate (KeyValuePair<Vector2Int, int> a, KeyValuePair<Vector2Int, int> b) { return a.Value.CompareTo(b.Value); });
 
             safetyCount--;
         }

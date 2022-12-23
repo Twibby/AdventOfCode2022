@@ -13,17 +13,17 @@ public class Day_2022_15 : DayScript2022
     }
     protected override string part_1()
     {
-        List<IntVector2> impossiblePosInterval = new List<IntVector2>();
+        List<Vector2Int> impossiblePosInterval = new List<Vector2Int>();
         int targetRow = (IsTestInput ? 10 : 2000000);
 
         // Parse input and create range where there can't be a beacon
         foreach (string sensorInstruction in _input.Split('\n'))
         {
             string[] coords = sensorInstruction.Substring(12, sensorInstruction.IndexOf(':') - 12).Split(", y=", System.StringSplitOptions.RemoveEmptyEntries);
-            IntVector2 sCoord = new IntVector2(int.Parse(coords[0]), int.Parse(coords[1]));
+            Vector2Int sCoord = new Vector2Int(int.Parse(coords[0]), int.Parse(coords[1]));
 
             coords = sensorInstruction.Substring(sensorInstruction.LastIndexOf("x=") + 2).Split(", y=", System.StringSplitOptions.RemoveEmptyEntries);
-            IntVector2 bCoord = new IntVector2(int.Parse(coords[0]), int.Parse(coords[1]));
+            Vector2Int bCoord = new Vector2Int(int.Parse(coords[0]), int.Parse(coords[1]));
 
             int distance = Mathf.Abs(bCoord.x - sCoord.x) + Mathf.Abs(bCoord.y - sCoord.y);
             int distToRow = Mathf.Abs(sCoord.y - targetRow);
@@ -31,10 +31,10 @@ public class Day_2022_15 : DayScript2022
             if (distToRow > distance)
                 continue;
 
-            impossiblePosInterval.Add(new IntVector2(sCoord.x - (distance - distToRow), sCoord.x + (distance - distToRow)));
+            impossiblePosInterval.Add(new Vector2Int(sCoord.x - (distance - distToRow), sCoord.x + (distance - distToRow)));
         }
 
-        impossiblePosInterval.Sort(delegate (IntVector2 a, IntVector2 b) { return a.x.CompareTo(b.x); });
+        impossiblePosInterval.Sort(delegate (Vector2Int a, Vector2Int b) { return a.x.CompareTo(b.x); });
 
         long count = 0;
         count += impossiblePosInterval[0].y - impossiblePosInterval[0].x + 1;
@@ -64,16 +64,16 @@ public class Day_2022_15 : DayScript2022
     protected override string part_2()
     {
         int maxCoord = (IsTestInput ? 20 : 4000000);
-        Dictionary<IntVector2, IntVector2> sensors = new Dictionary<IntVector2, IntVector2>();
+        Dictionary<Vector2Int, Vector2Int> sensors = new Dictionary<Vector2Int, Vector2Int>();
 
         // Parse input and create dictionary Sensor Pos => closest Beacon pos
         foreach (string sensorInstruction in _input.Split('\n'))
         {
             string[] coords = sensorInstruction.Substring(12, sensorInstruction.IndexOf(':') - 12).Split(", y=", System.StringSplitOptions.RemoveEmptyEntries);
-            IntVector2 sCoord = new IntVector2(int.Parse(coords[0]), int.Parse(coords[1]));
+            Vector2Int sCoord = new Vector2Int(int.Parse(coords[0]), int.Parse(coords[1]));
 
             coords = sensorInstruction.Substring(sensorInstruction.LastIndexOf("x=") + 2).Split(", y=", System.StringSplitOptions.RemoveEmptyEntries);
-            IntVector2 bCoord = new IntVector2(int.Parse(coords[0]), int.Parse(coords[1]));
+            Vector2Int bCoord = new Vector2Int(int.Parse(coords[0]), int.Parse(coords[1]));
 
             sensors.Add(sCoord, bCoord);
         }
@@ -82,7 +82,7 @@ public class Day_2022_15 : DayScript2022
         for (int y = 0; y <= maxCoord; y++)
         {
             // First let find all impossible range (as in part1) for each sensor
-            List<IntVector2> impossiblePosInterval = new List<IntVector2>();
+            List<Vector2Int> impossiblePosInterval = new List<Vector2Int>();
             foreach (var sensor in sensors)
             {
                 int distance = Mathf.Abs(sensor.Value.x - sensor.Key.x) + Mathf.Abs(sensor.Value.y - sensor.Key.y);
@@ -91,11 +91,11 @@ public class Day_2022_15 : DayScript2022
                 if (distToRow > distance)
                     continue;
 
-                impossiblePosInterval.Add(new IntVector2(Mathf.Max(0,sensor.Key.x - (distance - distToRow)), Mathf.Min(maxCoord, sensor.Key.x + (distance - distToRow))));
+                impossiblePosInterval.Add(new Vector2Int(Mathf.Max(0,sensor.Key.x - (distance - distToRow)), Mathf.Min(maxCoord, sensor.Key.x + (distance - distToRow))));
             }
 
             // Sort these imposssible range and see if they match [0; maxCoord] or if there is an empty space somewhere...
-            impossiblePosInterval.Sort(delegate (IntVector2 a, IntVector2 b) { return a.x.CompareTo(b.x); });
+            impossiblePosInterval.Sort(delegate (Vector2Int a, Vector2Int b) { return a.x.CompareTo(b.x); });
             if (impossiblePosInterval.Count == 0 || impossiblePosInterval[0].x != 0)
                 return "Eeeeet c'est le fail : " + System.String.Join(" / ", impossiblePosInterval);
 
