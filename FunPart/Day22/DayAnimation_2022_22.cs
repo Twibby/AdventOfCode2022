@@ -2,240 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
+using TMPro;
 
-public class Day_2022_22 : DayScript2022
+public class DayAnimation_2022_22 : DayAnimationScript
 {
+
+    public float timeBetweenInstructions = 2f;
+    public float timeBetweenMoves = 0.5f;
+
     List<string> grid = new List<string>();
-    protected override string part_1()
-    {
-        grid = new List<string>(_input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[0].Split('\n').ToList());
-        string instruction = _input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[1];
-
-        Vector2Int startingPoint = new(grid[0].IndexOf('.'), 0);
-        FacingDirection startDirection = FacingDirection.Right;
-
-        Debug.Log("Starting at " + startingPoint.ToString() + ", facing " + startDirection.ToString());
-
-        Vector2Int curPos = startingPoint;
-        FacingDirection curDir = startDirection;
-        int index = 0;
-        int directionsCount = System.Enum.GetValues(typeof(FacingDirection)).Length;
-
-        int safetyCount = 10000;
-        while (index < instruction.Length && safetyCount > 0)
-        {
-            if (instruction[index] == 'R' || instruction[index] == 'L')
-            {
-                curDir = (FacingDirection)(((int)curDir + (instruction[index] == 'R' ? 1 : -1) + directionsCount) % directionsCount);
-                
-                Debug.Log("Turning " + instruction[index] + " - Now facing " + curDir.ToString());
-                index++;
-            }
-            else
-            {
-                int firstNonDigitIndex = Mathf.Min( (instruction.IndexOf('R', index) < 0 ? instruction.Length : instruction.IndexOf('R', index)),
-                                                    (instruction.IndexOf('L', index) < 0 ? instruction.Length : instruction.IndexOf('L', index)) );
-
-                //Debug.Log("index is " + index + " | fisrtnondigit is " + firstNonDigitIndex);
-                //Debug.Log(", resulting substring is" + instruction.Substring(index, firstNonDigitIndex - index));
-                int val = int.Parse(instruction.Substring(index, firstNonDigitIndex - index));
-                curPos = DoMove(curDir, curPos, val);
-
-                Debug.Log("Moving " + curDir.ToString() + ", " + val + " times - Now current position is " + curPos.ToString());
-                index = firstNonDigitIndex;
-            }
-
-            safetyCount--;
-        }
-
-        Debug.Log("Finishing at " + curPos.ToString() + ", facing " + curDir.ToString());
-
-        int total = 1000 * (curPos.y+1) + 4 * (curPos.x+1) + (int)curDir;
-        return total.ToString();
-    }
-
-    public Vector2Int DoMove(FacingDirection direction, Vector2Int startPos, int moves)
-    {
-        Vector2Int result = Vector2Int.zero;
-
-        switch (direction)
-        {
-            case FacingDirection.Right: result = DoMoveRight(startPos, moves);  break;
-            case FacingDirection.Down:  result = DoMoveDown(startPos, moves);   break;
-            case FacingDirection.Left:  result = DoMoveLeft(startPos, moves);   break;
-            case FacingDirection.Up:    result = DoMoveUp(startPos, moves);     break;
-        }
-
-        return result;
-    }
-
-    public Vector2Int DoMoveRight(Vector2Int startPos, int moves)
-    {
-        Vector2Int result = new Vector2Int(startPos.x, startPos.y);
-
-        for (int i = 0; i < moves; i ++)
-        {
-            if (grid[result.y].Length > result.x + 1 && grid[result.y][result.x +1] != ' ')
-            {
-                if (grid[result.y][result.x + 1] == '#')
-                {
-                    Debug.Log("BONK, after " + i.ToString() + " moves");
-                    break;
-                }
-
-                result.x += 1;
-            }
-            else
-            {
-                int firstIndexNotEmpty = grid[result.y].IndexOfAny(new char[] { '.', '#' });
-                if (firstIndexNotEmpty < 0)
-                    Debug.LogError("wtf ?? '" + grid[result.y] + "'");
-
-                if (grid[result.y][firstIndexNotEmpty] == '#')
-                {
-                    Debug.Log("BONK, on wrapping.. after " + i.ToString() + " moves");
-                    break;
-                }
-
-                result.x = firstIndexNotEmpty;
-            }
-        }       
-
-        return result;
-    }
-
-    public Vector2Int DoMoveLeft(Vector2Int startPos, int moves)
-    {
-        Vector2Int result = new Vector2Int(startPos.x, startPos.y);
-
-        for (int i = 0; i < moves; i++)
-        {
-            if (result.x > 0 && grid[result.y][result.x-1] != ' ')
-            {
-                if (grid[result.y][result.x - 1] == '#')
-                {
-                    Debug.Log("BONK, after " + i.ToString() + " moves");
-                    break;
-                }
-
-                result.x -= 1;
-            }
-            else
-            {
-                int lastIndexNotEmpty = grid[result.y].LastIndexOfAny(new char[] { '.', '#' });
-                if (lastIndexNotEmpty < 0)
-                    Debug.LogError("wtf ?? '" + grid[result.y] + "'");
-
-                if (grid[result.y][lastIndexNotEmpty] == '#')
-                {
-                    Debug.Log("BONK, on wrapping.. after " + i.ToString() + " moves");
-                    break;
-                }
-
-                result.x = lastIndexNotEmpty;
-            }
-        }
-
-        return result;
-    }
-
-    public Vector2Int DoMoveUp(Vector2Int startPos, int moves)
-    {
-        Vector2Int result = new Vector2Int(startPos.x, startPos.y);
-
-        for (int i = 0; i < moves; i++)
-        {
-            if (result.y > 0 && grid[result.y-1].Length > result.x && grid[result.y -1][result.x] != ' ')
-            {
-                if (grid[result.y -1][result.x] == '#')
-                {
-                    Debug.Log("BONK, after " + i.ToString() + "moves");
-                    break;
-                }
-
-                result.y -= 1;
-            }
-            else
-            {
-                int lastIndexNotEmpty = -1;
-                for (int j= grid.Count-1; j > 0; j--)
-                {
-                    if (grid[j].Length > result.x && grid[j][result.x] != ' ')
-                    {
-                        lastIndexNotEmpty = j;
-                        break;
-                    }
-                }
-
-                if (lastIndexNotEmpty < 0)
-                    Debug.LogError("wtf ?? '" + System.String.Join("", grid.Select(x => x.Length > result.x ? x[result.x].ToString() : " ")) + "'");
-
-                if (grid[lastIndexNotEmpty][result.x] == '#')
-                {
-                    Debug.Log("BONK, on wrapping.. after " + i.ToString() + "moves");
-                    break;
-                }
-
-                result.y = lastIndexNotEmpty;
-            }
-        }
-
-        return result;
-    }
-
-    public Vector2Int DoMoveDown(Vector2Int startPos, int moves)
-    {
-        Vector2Int result = new Vector2Int(startPos.x, startPos.y);
-
-        for (int i = 0; i < moves; i++)
-        {
-            if (result.y < grid.Count -1  && grid[result.y + 1].Length > result.x && grid[result.y + 1][result.x] != ' ')
-            {
-                if (grid[result.y + 1][result.x] == '#')
-                {
-                    Debug.Log("BONK, after " + i.ToString() + "moves");
-                    break;
-                }
-
-                result.y += 1;
-            }
-            else
-            {
-                int firstIndexNotEmpty = -1;
-                for (int j = 0; j < grid.Count; j++)
-                {
-                    if (grid[j].Length > result.x && grid[j][result.x] != ' ')
-                    {
-                        firstIndexNotEmpty = j;
-                        break;
-                    }
-                }
-
-                if (firstIndexNotEmpty < 0)
-                    Debug.LogError("wtf ?? '" + System.String.Join("", grid.Select(x => x.Length > result.x ? x[result.x].ToString() : " ")) + "'");
-
-                if (grid[firstIndexNotEmpty][result.x] == '#')
-                {
-                    Debug.Log("BONK, on wrapping.. after " + i.ToString() + "moves");
-                    break;
-                }
-
-                result.y = firstIndexNotEmpty;
-            }
-        }
-
-        return result;
-    }
 
     static List<CubeFace> cubeFaces = new List<CubeFace>();
     static CubeFace currentFace;
     static int faceSize = 50;
-    static FacingDirection curDir = FacingDirection.Up;
+    static FacingDirection curDir = FacingDirection.Right;
 
-    protected override string part_2()
+    public TMP_Text TopContent, FrontContent, BotContent, BackContent, WestContent, EastContent;
+
+    public TMP_Text CurrentInfoLabel;
+
+    public override IEnumerator part_2()
     {
-        grid = new List<string>(_input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[0].Split('\n').ToList());
-        string instruction = _input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[1];
+        yield return new WaitForEndOfFrame();
+
+        grid = new List<string>(input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[0].Split('\n').ToList());
+        string instruction = input.Split(new string[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries)[1];
 
 
         cubeFaces = new List<CubeFace>();
@@ -294,12 +86,18 @@ public class Day_2022_22 : DayScript2022
         face.neighboursRelationship.Add(FacingDirection.Left, new KeyValuePair<FaceName, int>(FaceName.Top, -1));
         cubeFaces.Add(face);
 
+        TopContent.text = cubeFaces.Find(x => x.MyFace == FaceName.Top).gridText;
+        FrontContent.text = System.String.Join("\n", cubeFaces.Find(x => x.MyFace == FaceName.Front).grid);
+        BotContent.text = System.String.Join("\n", cubeFaces.Find(x => x.MyFace == FaceName.Bot).grid);
+        BackContent.text = System.String.Join("\n", cubeFaces.Find(x => x.MyFace == FaceName.Back).grid);
+        WestContent.text = System.String.Join("\n", cubeFaces.Find(x => x.MyFace == FaceName.West).grid);
+        EastContent.text = System.String.Join("\n", cubeFaces.Find(x => x.MyFace == FaceName.East).grid);
+
         StartCoroutine(coDay22_2(instruction));
-        return "";
     }
 
     IEnumerator coDay22_2(string instruction)
-    { 
+    {
         CubeFace startFace = cubeFaces.Find(x => x.MyFace == FaceName.Top);
         Vector2Int startingPoint = new(startFace.grid[0].IndexOf('.'), 0); ;
         FacingDirection startDirection = FacingDirection.Right;
@@ -309,6 +107,7 @@ public class Day_2022_22 : DayScript2022
         Vector2Int curPos = startingPoint;
         curDir = startDirection;
         currentFace = startFace;
+        printCurrentChar(currentFace, curPos);
 
         int index = 0;
         int directionsCount = System.Enum.GetValues(typeof(FacingDirection)).Length;
@@ -316,6 +115,7 @@ public class Day_2022_22 : DayScript2022
         int safetyCount = 100000;
         while (index < instruction.Length && safetyCount > 0)
         {
+
             if (instruction[index] == 'R' || instruction[index] == 'L')
             {
                 curDir = (FacingDirection)(((int)curDir + (instruction[index] == 'R' ? 1 : -1) + directionsCount) % directionsCount);
@@ -331,45 +131,52 @@ public class Day_2022_22 : DayScript2022
                 //Debug.Log("index is " + index + " | fisrtnondigit is " + firstNonDigitIndex);
                 //Debug.Log(", resulting substring is" + instruction.Substring(index, firstNonDigitIndex - index));
                 int val = int.Parse(instruction.Substring(index, firstNonDigitIndex - index));
-                curPos = DoMoveP2(curDir, curPos, val);
+                yield return DoMoveP2(curDir, curPos, val);
+
+                curPos = res;
 
                 Debug.Log("Moving " + curDir.ToString() + ", " + val + " times - Now current position is " + curPos.ToString() + " on face " + currentFace.MyFace.ToString());
                 index = firstNonDigitIndex;
             }
 
-            yield return new WaitForSeconds(0.2f);
+            printCurrentChar(currentFace, curPos);
+            CurrentInfoLabel.text = "Face " + currentFace.MyFace.ToString() + "\nDir : " + curDir.ToString();
+            yield return new WaitForSeconds(timeBetweenInstructions);
             safetyCount--;
         }
 
         if (safetyCount <= 0)
             Debug.LogError("EXITED EARLIER");
 
-        Debug.LogWarning("Finishing at " + curPos.ToString() + ", facing " + curDir.ToString() + " on FAce " + currentFace.MyFace.ToString());
+        Debug.Log("Finishing at " + curPos.ToString() + ", facing " + curDir.ToString() + " on FAce " + currentFace.MyFace.ToString());
 
         int total = 1000 * (curPos.y + 1 + faceSize) + 4 * (curPos.x + 1 + faceSize) + (int)curDir;
         Debug.LogWarning(total.ToString());
     }
 
 
-    public Vector2Int DoMoveP2(FacingDirection direction, Vector2Int startPos, int moves)
+    public IEnumerator DoMoveP2(FacingDirection direction, Vector2Int startPos, int moves)
     {
-        Vector2Int result = Vector2Int.zero;
+        yield return new WaitForEndOfFrame();
 
         switch (direction)
         {
-            case FacingDirection.Right: result = DoMoveRightP2(startPos, moves); break;
-            case FacingDirection.Down: result = DoMoveDownP2(startPos, moves); break;
-            case FacingDirection.Left: result = DoMoveLeftP2(startPos, moves); break;
-            case FacingDirection.Up: result = DoMoveUpP2(startPos, moves); break;
+            case FacingDirection.Right: yield return DoMoveRightP2(startPos, moves); break;
+            case FacingDirection.Down: yield return DoMoveDownP2(startPos, moves); break;
+            case FacingDirection.Left: yield return DoMoveLeftP2(startPos, moves); break;
+            case FacingDirection.Up: yield return DoMoveUpP2(startPos, moves); break;
         }
-
-        return result;
     }
 
-    public Vector2Int DoMoveRightP2(Vector2Int startPos, int moves)
+    static Vector2Int res = Vector2Int.zero;
+
+
+    public IEnumerator DoMoveRightP2(Vector2Int startPos, int moves)
     {
         Debug.Log("On face " + currentFace.MyFace.ToString() + ", start moving RIGHT " + moves + " times from Pos " + startPos);
+
         Vector2Int result = new Vector2Int(startPos.x, startPos.y);
+        hardPrintChar(result, curDir);
 
         for (int i = 0; i < moves; i++)
         {
@@ -382,6 +189,7 @@ public class Day_2022_22 : DayScript2022
                 }
 
                 result.x += 1;
+                hardPrintChar(result, FacingDirection.Right);
             }
             else
             {
@@ -406,19 +214,25 @@ public class Day_2022_22 : DayScript2022
                 }
                 else
                 {
+                    printCurrentChar(currentFace, null);
                     currentFace = newFace; curDir = newDir;
-                    return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    hardPrintChar(newPos, newDir);
+                    yield return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    yield break;
                 }
             }
+            yield return new WaitForSeconds(timeBetweenMoves);
+
         }
 
-        return result;
+        res = result;
     }
 
-    public Vector2Int DoMoveLeftP2(Vector2Int startPos, int moves)
+    public IEnumerator DoMoveLeftP2(Vector2Int startPos, int moves)
     {
         Debug.Log("On face " + currentFace.MyFace.ToString() + ", start moving LEFT " + moves + " times from Pos " + startPos);
         Vector2Int result = new Vector2Int(startPos.x, startPos.y);
+        hardPrintChar(result, curDir);
 
         for (int i = 0; i < moves; i++)
         {
@@ -431,6 +245,7 @@ public class Day_2022_22 : DayScript2022
                 }
 
                 result.x -= 1;
+                hardPrintChar(result, FacingDirection.Left);
             }
             else
             {
@@ -455,20 +270,28 @@ public class Day_2022_22 : DayScript2022
                 }
                 else
                 {
+                    printCurrentChar(currentFace, null);
                     currentFace = newFace; curDir = newDir;
-                    return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    hardPrintChar(newPos, newDir);
+                    yield return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    yield break;
                 }
             }
+            yield return new WaitForSeconds(timeBetweenMoves);
+
         }
 
-        return result;
+        res = result;
     }
 
-    public Vector2Int DoMoveUpP2(Vector2Int startPos, int moves)
+    public IEnumerator DoMoveUpP2(Vector2Int startPos, int moves)
     {
+        yield return new WaitForSeconds(timeBetweenMoves);
+
         Debug.Log("On face " + currentFace.MyFace.ToString() + ", start moving UP " + moves + " times from Pos " + startPos);
 
         Vector2Int result = new Vector2Int(startPos.x, startPos.y);
+        hardPrintChar(result, curDir);
 
         for (int i = 0; i < moves; i++)
         {
@@ -481,6 +304,7 @@ public class Day_2022_22 : DayScript2022
                 }
 
                 result.y -= 1;
+                hardPrintChar(result, FacingDirection.Up);
             }
             else
             {
@@ -505,24 +329,30 @@ public class Day_2022_22 : DayScript2022
                 }
                 else
                 {
+                    printCurrentChar(currentFace, null);
                     currentFace = newFace; curDir = newDir;
-                    return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    hardPrintChar(newPos, newDir);
+                    yield return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    yield break;
                 }
             }
+            yield return new WaitForSeconds(timeBetweenMoves);
+
         }
 
-        return result;
+        res = result;
     }
 
-    public Vector2Int DoMoveDownP2(Vector2Int startPos, int moves)
+    public IEnumerator DoMoveDownP2(Vector2Int startPos, int moves)
     {
         Debug.Log("On face " + currentFace.MyFace.ToString() + ", start moving DOWN " + moves + " times from Pos " + startPos);
 
         Vector2Int result = new Vector2Int(startPos.x, startPos.y);
+        hardPrintChar(result, curDir);
 
         for (int i = 0; i < moves; i++)
         {
-            if (result.y + 1 < currentFace.grid.Count )
+            if (result.y + 1 < currentFace.grid.Count)
             {
                 if (currentFace.grid[result.y + 1][result.x] == '#')
                 {
@@ -531,6 +361,7 @@ public class Day_2022_22 : DayScript2022
                 }
 
                 result.y += 1;
+                hardPrintChar(result, FacingDirection.Down);
             }
             else
             {
@@ -555,15 +386,59 @@ public class Day_2022_22 : DayScript2022
                 }
                 else
                 {
+                    printCurrentChar(currentFace, null);
+
                     currentFace = newFace; curDir = newDir;
-                    return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    hardPrintChar(newPos, newDir);
+                    yield return DoMoveP2(newDir, newPos, moves - 1 - i);
+                    yield break;
                 }
             }
+            yield return new WaitForSeconds(timeBetweenMoves);
         }
 
-        return result;
+        res = result;
     }
 
+    void hardPrintChar(Vector2Int result, FacingDirection dir)
+    {
+        char c = 'x';
+        switch (dir)
+        {
+            case FacingDirection.Down: c = 'v'; break;
+            case FacingDirection.Up: c = '^'; break;
+            case FacingDirection.Left: c = '<'; break;
+            case FacingDirection.Right: c = '>'; break;
+        }
+
+        currentFace.grid[result.y] = currentFace.grid[result.y].Substring(0, result.x) + c + (currentFace.grid[result.y].Length > result.x + 1 ? currentFace.grid[result.y].Substring(result.x + 1) : "");
+        printCurrentChar(currentFace, result);
+    }
+    void printCurrentChar(CubeFace face, Vector2Int? pos)
+    {
+
+
+        TMP_Text textLabel = null;
+        switch (face.MyFace)
+        {
+            case FaceName.Top: textLabel = TopContent; break;
+            case FaceName.Front: textLabel = FrontContent; break;
+            case FaceName.Bot: textLabel = BotContent; break;
+            case FaceName.Back: textLabel = BackContent; break;
+            case FaceName.West: textLabel = WestContent; break;
+            case FaceName.East: textLabel = EastContent; break;
+        }
+        if (pos == null)
+        {
+            textLabel.text = face.gridText;
+        }
+        else
+        {
+            int index = pos.Value.y * (faceSize + 1) + pos.Value.x;
+            string rawText = face.gridText;
+            textLabel.text = rawText.Substring(0, index) + "<color=red>@</color>" + (index + 1 < rawText.Length ? rawText.Substring(index + 1) : "");
+        }
+    }
 
     public class CubeFace
     {
@@ -577,6 +452,8 @@ public class Day_2022_22 : DayScript2022
             this.MyFace = side;
             this.neighboursRelationship = new Dictionary<FacingDirection, KeyValuePair<FaceName, int>>();
         }
+
+        public string gridText {  get { return System.String.Join("\n", grid); } }
     }
 
     public enum FaceName { Top, Bot, West, East, Front, Back }
