@@ -2234,7 +2234,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &388813287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2254,7 +2254,7 @@ MonoBehaviour:
   AnimPart1: 0
   AnimPart2: 0
   animationScript: {fileID: 0}
-  blizzardPrecount: 1500
+  blizzardPrecount: 300
 --- !u!4 &388813288
 Transform:
   m_ObjectHideFlags: 0
@@ -2792,11 +2792,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsDebug: 0
   IsTestInput: 0
-  Part1: 1
-  Part2: 0
+  Part1: 0
+  Part2: 1
   AnimPart1: 0
   AnimPart2: 0
   animationScript: {fileID: 0}
+  grid: []
 --- !u!4 &597481389
 Transform:
   m_ObjectHideFlags: 0
@@ -3536,7 +3537,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1027299453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3550,7 +3551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsDebug: 0
-  IsTestInput: 0
+  IsTestInput: 1
   Part1: 1
   Part2: 0
   AnimPart1: 0
