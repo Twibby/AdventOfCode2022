@@ -10,14 +10,10 @@ public class Day_2022_25 : DayScript2022
                             
     protected override string part_1()
     {
-        Debug.LogWarning("Convert 2=000=22-0-1=1-=22-1 => " + snafuToInt("2=000=22-0-1=1-=22-1"));
-
-
         double result = 0;
 
         foreach (string fuel in _input.Split('\n'))
         {
-            Debug.Log("Fuel snafu is " + fuel + " => " + snafuToInt(fuel));
             result += snafuToInt(fuel);
         }
 
@@ -46,15 +42,12 @@ public class Day_2022_25 : DayScript2022
                 result -= 2 * power;
             else
                 Debug.LogError("wtf ? " + snafu + " - '" + c + "'");
-
-            Debug.Log("c is " + c.ToString() + ", and current power is " + power + " => new result is = " + result);
         }
         return result;
     }
 
     string intToSnafu(double number)
     {
-        Debug.Log("Converting number " + number);
 
         List<double> remainders = new List<double>();
         double copy = number;
@@ -62,19 +55,13 @@ public class Day_2022_25 : DayScript2022
         {
             double remain = copy - System.Math.Floor(copy / 5) * 5;
             copy = System.Math.Floor(copy/5);
-            Debug.Log("First remain is " + remain + " and new number is " + copy);
 
             remainders.Add(remain);
         }
-
-        remainders.Reverse();
-        Debug.LogWarning("Remainders are " + System.String.Join(" ", remainders));
-        remainders.Reverse();
         
         List<string> snafuChar = new List<string>();
         for (int i = 0; i < remainders.Count; i++)
         {
-            Debug.Log("remain is " + remainders[i]);
             if (remainders[i] <= 2)
             {
                 snafuChar.Add(remainders[i].ToString());
