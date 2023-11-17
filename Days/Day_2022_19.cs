@@ -14,31 +14,30 @@ public class Day_2022_19 : DayScript2022
 
     IEnumerator coDay(int totalTime)
     { 
-        Dictionary<int, int> bestSCores = new Dictionary<int, int>();
+        Dictionary<int, (int, string)> bestSCores = new Dictionary<int, (int, string)>();
         foreach (string instruction in _input.Split('\n'))
         {
             Blueprint bp = new Blueprint(instruction);
-            Debug.LogWarning("*********** STARTING BLUEPRINT " + bp.id + " ****************** ");
+            // Debug.LogWarning("*********** STARTING BLUEPRINT " + bp.id + " ****************** ");
 
-            StateMachine startState = new StateMachine(totalTime, MaterialType.Ore, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } });
-            StateMachine startState2 = new StateMachine(totalTime, MaterialType.Clay, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } });
+            StateMachine startState = new StateMachine(totalTime, MaterialType.Ore, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } }, "");
+            StateMachine startState2 = new StateMachine(totalTime, MaterialType.Clay, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } }, "");
 
             Queue<StateMachine> queue = new Queue<StateMachine>();
             queue.Enqueue(startState);
             queue.Enqueue(startState2);
 
             int bestGeodeScore = 0;
+            string bestHistory = "";
             int safetyCount = 100000000;
             int time = 0;
-            if (bp.id == 2)
-                Debug.Log("toto");
 
             while (queue.Count > 0 && safetyCount > 0 )
             {
                 safetyCount--;
                 if (safetyCount %10000 == 0)
                 {
-                    Debug.Log("SafetyCount " + safetyCount + " - queue Count " + queue.Count + "  (" + time + ")");
+                    //Debug.Log("SafetyCount " + safetyCount + " - queue Count " + queue.Count + "  (" + time + ")");
                     yield return new WaitForEndOfFrame();
                 }
 
@@ -49,20 +48,41 @@ public class Day_2022_19 : DayScript2022
 
                 if (curState.timeRemaining <= 0)
                 {
-                    bestGeodeScore = Mathf.Max(bestGeodeScore, curState.materialsCount[MaterialType.Geode]);
+                    if (curState.materialsCount[MaterialType.Geode] > bestGeodeScore)
+                    {
+                        bestGeodeScore = curState.materialsCount[MaterialType.Geode];
+                        bestHistory = curState.history;
+                    }
                     continue;
                 }
 
                 // try to remove some bad cases
-                //if (curState.timeRemaining <= 15 && curState.robotsCount[MaterialType.Clay] == 0)
-                //    continue;       // arbitrary value to cut down cases to analyze
-                //if ((curState.robotsCount[MaterialType.Geode]+1 * curState.timeRemaining)  <= bestGeodeScore+1)
-                //    continue;   // this machine will never reach bestscore
-                //if (curState.robotsCount[MaterialType.Obsi] == 0 && bp.geodeRobotCost[MaterialType.Obsi] >= curState.timeRemaining + 1)
-                //    continue;
-                if (curState.nextRobotTarget == MaterialType.Geode && curState.robotsCount[MaterialType.Obsi] * (curState.timeRemaining-1) < bp.geodeRobotCost[MaterialType.Obsi])
+                if (curState.timeRemaining <= 8)
+                {
+                    int t = curState.timeRemaining;
+                    if (curState.materialsCount[MaterialType.Geode] + t * curState.robotsCount[MaterialType.Geode] + ((t - 1) * t / 2) < bestGeodeScore)
+                        continue;   // this machine will never reach bestscore
+                }
+                if (curState.robotsCount[MaterialType.Obsi] == 0 && Mathf.Sqrt(bp.geodeRobotCost[MaterialType.Obsi]) >= curState.timeRemaining + 1)
+                    continue;
+                if (curState.nextRobotTarget == MaterialType.Geode && curState.robotsCount[MaterialType.Obsi] * (curState.timeRemaining - 1) + curState.materialsCount[MaterialType.Obsi] < bp.geodeRobotCost[MaterialType.Obsi])
                 {   // no more robot will be built
-                    bestGeodeScore = Mathf.Max(bestGeodeScore, curState.materialsCount[MaterialType.Geode] + curState.robotsCount[MaterialType.Geode]*curState.timeRemaining);
+                    int newScore = curState.materialsCount[MaterialType.Geode] + curState.robotsCount[MaterialType.Geode] * curState.timeRemaining;
+                    if (newScore > bestGeodeScore)
+                    {
+                        bestGeodeScore = newScore;
+                        bestHistory = curState.history;
+                    }
+                    continue;
+                }
+                if (curState.nextRobotTarget == MaterialType.Obsi && curState.robotsCount[MaterialType.Clay] * (curState.timeRemaining - 1) + curState.materialsCount[MaterialType.Clay] < bp.obsiRobotCost[MaterialType.Clay])
+                {   // no more robot will be built
+                    int newScore = curState.materialsCount[MaterialType.Geode] + curState.robotsCount[MaterialType.Geode] * curState.timeRemaining;
+                    if (newScore > bestGeodeScore)
+                    {
+                        bestGeodeScore = newScore;
+                        bestHistory = curState.history;
+                    }
                     continue;
                 }
 
@@ -94,12 +114,12 @@ public class Day_2022_19 : DayScript2022
                             continue;      
 
 
-                        queue.Enqueue(new StateMachine(curState.timeRemaining - 1, mt, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount)));
+                        queue.Enqueue(new StateMachine(curState.timeRemaining - 1, mt, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount), curState.history + System.Environment.NewLine + "Building " + curState.nextRobotTarget + " with " + curState.timeRemaining + "min remaining"));
                     }
                 }
                 else
                 {
-                    queue.Enqueue(new StateMachine(curState.timeRemaining - 1, curState.nextRobotTarget, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount)));
+                    queue.Enqueue(new StateMachine(curState.timeRemaining - 1, curState.nextRobotTarget, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount), curState.history));
                 }
             }
             yield return new WaitForEndOfFrame();
@@ -117,16 +137,18 @@ public class Day_2022_19 : DayScript2022
             else
                 Debug.Log((10000000 - safetyCount).ToString() + " iterations done");
 
+            string log = "Scores by bp : " + System.Environment.NewLine;
+
             Debug.LogWarning("Best score of Blueprint " + bp.id + " is " + bestGeodeScore);
-            bestSCores.Add(bp.id, bestGeodeScore);
+            bestSCores.Add(bp.id, (bestGeodeScore, bestHistory));
 
             yield return new WaitForSeconds(1f);
         }
 
         yield return new WaitForEndOfFrame();
 
-        int totalScore = bestSCores.Select(x => x.Key*x.Value).Sum();
-        Debug.LogWarning("Total score is " + totalScore);
+        int totalScore = bestSCores.Select(x => x.Key*x.Value.Item1).Sum();
+        Debug.LogWarning(String.Join("\n\n", bestSCores.Select(x => "bp " + x.Key + " has score " + x.Value.Item1 + System.Environment.NewLine + x.Value.Item2.Replace("Bui", "\tBui"))) + System.Environment.NewLine + System.Environment.NewLine + "Total score is " + totalScore);
     }
 
     protected override string part_2()
@@ -148,8 +170,8 @@ public class Day_2022_19 : DayScript2022
             Blueprint bp = new Blueprint(instruction);
             Debug.LogWarning("*********** STARTING BLUEPRINT " + bp.id + " ****************** ");
 
-            StateMachine startState = new StateMachine(totalTime, MaterialType.Ore, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } });
-            StateMachine startState2 = new StateMachine(totalTime, MaterialType.Clay, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } });
+            StateMachine startState = new StateMachine(totalTime, MaterialType.Ore, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } }, "");
+            StateMachine startState2 = new StateMachine(totalTime, MaterialType.Clay, new Dictionary<MaterialType, int>(), new Dictionary<MaterialType, int>() { { MaterialType.Ore, 1 } }, "");
 
             Stack<StateMachine> queue = new Stack<StateMachine>();
             queue.Push(startState2);
@@ -239,12 +261,12 @@ public class Day_2022_19 : DayScript2022
                             continue;
 
 
-                        queue.Push(new StateMachine(curState.timeRemaining - 1, mt, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount)));
+                        queue.Push(new StateMachine(curState.timeRemaining - 1, mt, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount), curState.history + System.Environment.NewLine + "Building " + curState.nextRobotTarget + " with " + curState.timeRemaining + "min remaining"));
                     }
                 }
                 else
                 {
-                    queue.Push(new StateMachine(curState.timeRemaining - 1, curState.nextRobotTarget, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount)));
+                    queue.Push(new StateMachine(curState.timeRemaining - 1, curState.nextRobotTarget, new Dictionary<MaterialType, int>(curState.materialsCount), new Dictionary<MaterialType, int>(curState.robotsCount), curState.history));
                 }
             }
             yield return new WaitForEndOfFrame();
@@ -362,13 +384,16 @@ public class Day_2022_19 : DayScript2022
         public Dictionary<MaterialType, int> materialsCount;
         public Dictionary<MaterialType, int> robotsCount;
 
+        public string history = "";
 
-        public StateMachine(int timeRemaining, MaterialType nextRobotTarget, Dictionary<MaterialType, int> materialsCount, Dictionary<MaterialType, int> robotsCount)
+        public StateMachine(int timeRemaining, MaterialType nextRobotTarget, Dictionary<MaterialType, int> materialsCount, Dictionary<MaterialType, int> robotsCount, string history)
         {
             this.timeRemaining = timeRemaining;
             this.nextRobotTarget = nextRobotTarget;
             this.materialsCount = materialsCount;
             this.robotsCount = robotsCount;
+
+            this.history = history;
 
             foreach (MaterialType mt in System.Enum.GetValues(typeof(MaterialType)))
             {
